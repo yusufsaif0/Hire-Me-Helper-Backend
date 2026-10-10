@@ -1,0 +1,49 @@
+{
+  "name": "trusted-worker-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run build && concurrently -k \"tsc -p tsconfig.json --watch --preserveWatchOutput\" \"node --watch dist/main.js\"",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test test/*.test.cjs",
+    "openapi": "npm run build && node scripts/openapi.cjs",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "test:integration": "npm run build && node --test test/integration/*.test.cjs",
+    "auth:mock-otp": "npm run build && node scripts/mock-otp.cjs"
+  },
+  "dependencies": {
+    "@nestjs/common": "11.2.7",
+    "@nestjs/core": "11.2.7",
+    "@nestjs/platform-express": "11.2.7",
+    "@nestjs/swagger": "11.4.7",
+    "dotenv": "17.4.2",
+    "helmet": "8.3.0",
+    "jsonwebtoken": "9.0.3",
+    "mongodb": "6.21.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@nestjs/testing": "11.2.7",
+    "@types/express": "5.0.6",
+    "@types/jsonwebtoken": "9.0.10",
+    "@types/node": "22.20.5",
+    "concurrently": "9.2.5",
+    "eslint": "10.12.0",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.9.9",
+    "supertest": "7.3.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.1"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

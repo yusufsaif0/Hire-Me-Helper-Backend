@@ -1,0 +1,1666 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "operationId": "HealthController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Process liveness only. Integrations are mocked; this is not a production readiness check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "System"
+        ]
+      }
+    },
+    "/v1/auth/otp/request": {
+      "post": {
+        "operationId": "MobileAuthController_request",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "phone",
+                  "purpose"
+                ],
+                "properties": {
+                  "phone": {
+                    "type": "string"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "enum": [
+                      "CUSTOMER_LOGIN",
+                      "WORKER_LOGIN"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Challenge credential; never includes OTP.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "challengeId",
+                    "challengeToken",
+                    "resendAfterSeconds",
+                    "expiresInSeconds",
+                    "maskedPhone"
+                  ],
+                  "properties": {
+                    "challengeId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "challengeToken": {
+                      "type": "string"
+                    },
+                    "resendAfterSeconds": {
+                      "type": "integer"
+                    },
+                    "expiresInSeconds": {
+                      "type": "integer"
+                    },
+                    "maskedPhone": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; retry after the indicated seconds.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Identity"
+        ]
+      }
+    },
+    "/v1/auth/otp/verify": {
+      "post": {
+        "operationId": "MobileAuthController_verify",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "challengeId",
+                  "challengeToken",
+                  "code"
+                ],
+                "properties": {
+                  "challengeId": {
+                    "type": "string"
+                  },
+                  "challengeToken": {
+                    "type": "string"
+                  },
+                  "code": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "accessToken",
+                    "refreshToken",
+                    "expiresInSeconds",
+                    "user"
+                  ],
+                  "properties": {
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    },
+                    "expiresInSeconds": {
+                      "type": "integer"
+                    },
+                    "user": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "role",
+                        "maskedPhone",
+                        "onboardingStatus"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "CUSTOMER",
+                            "WORKER",
+                            "ADMIN",
+                            "SUPER_ADMIN"
+                          ]
+                        },
+                        "maskedPhone": {
+                          "type": "string"
+                        },
+                        "onboardingStatus": {
+                          "type": "string",
+                          "enum": [
+                            "NOT_APPLICABLE",
+                            "PENDING_ONBOARDING"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; retry after the indicated seconds.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Identity"
+        ]
+      }
+    },
+    "/v1/auth/refresh": {
+      "post": {
+        "operationId": "MobileAuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "refreshToken"
+                ],
+                "properties": {
+                  "refreshToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "accessToken",
+                    "refreshToken",
+                    "expiresInSeconds",
+                    "user"
+                  ],
+                  "properties": {
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    },
+                    "expiresInSeconds": {
+                      "type": "integer"
+                    },
+                    "user": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "role",
+                        "maskedPhone",
+                        "onboardingStatus"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "CUSTOMER",
+                            "WORKER",
+                            "ADMIN",
+                            "SUPER_ADMIN"
+                          ]
+                        },
+                        "maskedPhone": {
+                          "type": "string"
+                        },
+                        "onboardingStatus": {
+                          "type": "string",
+                          "enum": [
+                            "NOT_APPLICABLE",
+                            "PENDING_ONBOARDING"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; retry after the indicated seconds.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Identity"
+        ]
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "operationId": "MobileAuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; retry after the indicated seconds.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access": []
+          }
+        ],
+        "tags": [
+          "Identity"
+        ]
+      }
+    },
+    "/v1/auth/logout-all": {
+      "post": {
+        "operationId": "MobileAuthController_logoutAll",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; retry after the indicated seconds.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access": []
+          }
+        ],
+        "tags": [
+          "Identity"
+        ]
+      }
+    },
+    "/v1/auth/me": {
+      "get": {
+        "operationId": "MobileAuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "role",
+                    "maskedPhone",
+                    "onboardingStatus"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "CUSTOMER",
+                        "WORKER",
+                        "ADMIN",
+                        "SUPER_ADMIN"
+                      ]
+                    },
+                    "maskedPhone": {
+                      "type": "string"
+                    },
+                    "onboardingStatus": {
+                      "type": "string",
+                      "enum": [
+                        "NOT_APPLICABLE",
+                        "PENDING_ONBOARDING"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; retry after the indicated seconds.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Correlated, redacted authentication error. See IDENTITY_API.md for codes.",
+            "headers": {
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access": []
+          }
+        ],
+        "tags": [
+          "Identity"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Trusted Assistance Worker API",
+    "description": "Phase 1 identity and access. Mock SMS only; no production startup. Health retains its Phase 0 liveness contract. Responses include an x-request-id UUID header.",
+    "version": "0.2.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "access": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      },
+      "accessCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "admin_access"
+      },
+      "refresh": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "admin_refresh"
+      }
+    },
+    "schemas": {
+      "HealthDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "service": {
+            "type": "string",
+            "enum": [
+              "trusted-assistance-worker-api"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "enum": [
+              "0.1.0"
+            ]
+          },
+          "phase": {
+            "type": "number",
+            "enum": [
+              0
+            ]
+          },
+          "integrations": {
+            "type": "string",
+            "enum": [
+              "mock"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "version",
+          "phase",
+          "integrations",
+          "timestamp"
+        ]
+      }
+    }
+  }
+}

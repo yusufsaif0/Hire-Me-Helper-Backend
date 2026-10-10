@@ -1,0 +1,42 @@
+name: worker backend checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EXPO_NO_TELEMETRY: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+      SCARF_ANALYTICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Start isolated MongoDB replica set for integration tests
+        run: |
+          docker run -d --name hire-me-identity-tests -p 127.0.0.1:27018:27017 mongo:8.0 --replSet rs0 --bind_ip_all
+          for attempt in $(seq 1 60); do
+            if docker exec hire-me-identity-tests mongosh --quiet --eval "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"; then break; fi
+            sleep 1
+          done
+          docker exec hire-me-identity-tests mongosh --quiet --eval 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
+          for attempt in $(seq 1 60); do
+            if docker exec hire-me-identity-tests mongosh --quiet --eval "quit(db.hello().isWritablePrimary ? 0 : 1)"; then break; fi
+            sleep 1
+          done
+          docker exec hire-me-identity-tests mongosh --quiet --eval "quit(db.hello().isWritablePrimary ? 0 : 1)"
+      - run: npm run test:integration
+      - run: npm run openapi
+      - run: git diff --exit-code -- docs/openapi.json
